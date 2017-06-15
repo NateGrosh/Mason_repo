@@ -16,12 +16,9 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 #from django.contrib.auth import views as auth_views
-
-from story.views import home
-from story.views import story
 from pictures.views import pictures
-from story.views import specific
-from story.views import post_new
+from story.views import home, login_view, post_new, specific, story
+from pictures.views import pictures
 
 
 urlpatterns = [
@@ -35,6 +32,9 @@ urlpatterns = [
     url(r'^story/newpost/$', post_new, name='post_new'),
     url(r'^story/', story),
     url(r'^pictures/', pictures),
+
+    url(r'^login/', login_view),
+
     url(r'^$', home),
 
 ]

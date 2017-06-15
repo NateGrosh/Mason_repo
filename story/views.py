@@ -1,29 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from story.models import Post
-from story.forms import PostForm
-
+from story.forms import PostForm, LoginForm
 
 def home(request):
-	return render(request, 'base.html')
+    return render(request, 'base.html')
 
 
 def story(request):
-	context = {
-		'posts': Post.objects.all()
-	}
-	return render(request, 'blog_homepage.html', context)
+    context = {
+        'posts': Post.objects.all()
+    }
+    return render(request, 'blog_homepage.html', context)
 
 
 def specific(request, blog_id):
-	context = {
-		'post': Post.objects.get(id=blog_id)
-	}
-	return render(request, 'specific_blogpage.html', context)
+    context = {
+        'post': Post.objects.get(id=blog_id)
+    }
+    return render(request, 'specific_blogpage.html', context)
 
-
+@login_required
 def post_new(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -32,7 +34,35 @@ def post_new(request):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            return render(request, 'blog_homepage.html', )
+
+            context = {
+                'posts': Post.objects.all()
+            }
+            return render(request, 'blog_homepage.html', context)
     else:
         form = PostForm()
     return render(request, 'post_edit.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+     #print 'form is post'
+        form = AuthenticationForm(request.POST)
+        #if form.is_valid():
+        print 'form is valid'
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return render(request, 'base.html')
+        else:
+            print 'User could not login'
+    #else:
+    #     print 'Form not valid'
+    #     import ipdb
+    #     ipdb.set_trace()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'login.html', context)

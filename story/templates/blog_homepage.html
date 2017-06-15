@@ -10,12 +10,15 @@
 		
 		<h1>Blog Posts</h1>
 
+
 		<HR>
+        `{% if user.is_authenticated %}`
 
 		<a href='/story/newpost/'> --> ADD A POST <-- </a>
 
 		<HR>
 		<br>
+        {% endif %}
 
 		{% for post in posts reversed %}
 
